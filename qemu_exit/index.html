@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Exit QEMU with user-defined code."><meta name="keywords" content="rust, rustlang, rust-lang, qemu_exit"><title>qemu_exit - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="../crates.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../qemu_exit/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../qemu_exit/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate qemu_exit</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 3.0.1</li><li><a id="all-types" href="all.html">All Items</a></li></ul></div><section><div class="block"><ul><li><a href="#modules">Modules</a></li><li><a href="#traits">Traits</a></li></ul></div></section></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../qemu_exit/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1">
+                                <a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div>
+                        </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">qemu_exit</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/qemu_exit/lib.rs.html#5-107">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Exit QEMU with user-defined code.</p>
+<p>Quit a running QEMU session with user-defined exit code. Useful for unit or integration tests
+using QEMU.</p>
+<h3 id="tldr"><a href="#tldr">TL;DR</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">qemu_exit::QEMUExit</span>;
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;aarch64&quot;</span>)]</span>
+<span class="kw">let</span> <span class="ident">qemu_exit_handle</span> <span class="op">=</span> <span class="ident">qemu_exit::AArch64::new</span>();
+
+<span class="comment">// addr: The address of sifive_test.</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;riscv64&quot;</span>)]</span>
+<span class="kw">let</span> <span class="ident">qemu_exit_handle</span> <span class="op">=</span> <span class="ident">qemu_exit::RISCV64::new</span>(<span class="ident">addr</span>);
+
+<span class="comment">// io_base:             I/O-base of isa-debug-exit.</span>
+<span class="comment">// custom_exit_success: A custom success code; Must be an odd number.</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;x86_64&quot;</span>)]</span>
+<span class="kw">let</span> <span class="ident">qemu_exit_handle</span> <span class="op">=</span> <span class="ident">qemu_exit::X86::new</span>(<span class="ident">io_base</span>, <span class="ident">custom_exit_success</span>);
+
+<span class="ident">qemu_exit_handle</span>.<span class="ident">exit</span>(<span class="number">1337</span>);
+<span class="ident">qemu_exit_handle</span>.<span class="ident">exit_success</span>();
+<span class="ident">qemu_exit_handle</span>.<span class="ident">exit_failure</span>();</code></pre></div>
+<h3 id="architecture-specific-configuration"><a href="#architecture-specific-configuration">Architecture Specific Configuration</a></h3><h4 id="aarch64"><a href="#aarch64">AArch64</a></h4>
+<p>Pass the <code>-semihosting</code> argument to the QEMU invocation, e.g.:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="ident">qemu</span><span class="op">-</span><span class="ident">system</span><span class="op">-</span><span class="ident">aarch64</span> <span class="op">-</span><span class="ident">M</span> <span class="ident">raspi3</span> <span class="op">-</span><span class="ident">serial</span> <span class="ident">stdio</span> <span class="op">-</span><span class="ident">semihosting</span> <span class="op">-</span><span class="ident">kernel</span> <span class="ident">kernel8</span>.<span class="ident">img</span></code></pre></div>
+<h4 id="riscv64"><a href="#riscv64">RISCV64</a></h4>
+<p>You need to chose a machine with the <code>sifive_test</code> device, for exemple <code>-M virt</code>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="ident">qemu</span><span class="op">-</span><span class="ident">system</span><span class="op">-</span><span class="ident">riscv64</span> <span class="op">-</span><span class="ident">M</span> <span class="ident">virt</span> <span class="op">-</span><span class="ident">nographic</span> <span class="op">-</span><span class="ident">monitor</span> <span class="ident">none</span> <span class="op">-</span><span class="ident">serial</span> <span class="ident">stdio</span> <span class="op">-</span><span class="ident">kernel</span> <span class="ident">kernel</span>.<span class="ident">elf</span></code></pre></div>
+<h4 id="x86_64"><a href="#x86_64">x86_64</a></h4>
+<p>Add the special ISA debug exit device by passing the flags:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="op">-</span><span class="ident">device</span> <span class="ident">isa</span><span class="op">-</span><span class="ident">debug</span><span class="op">-</span><span class="ident">exit</span>,<span class="ident">iobase</span><span class="op">=</span><span class="number">0xf4</span>,<span class="ident">iosize</span><span class="op">=</span><span class="number">0x04</span></code></pre></div>
+<p>When instantiating the handle, <code>iobase</code> must be given as the first parameter.</p>
+<p>The second parameter must be an <code>EXIT_SUCCESS</code> code of your choice that is an odd number, aka
+bit number zero must be <code>1</code>. This is needed because in QEMU, the provided code is internally
+binary-OR’ed with <code>0x1</code>. This is hardcoded and therefore, with <code>isa-debug-exit</code>, it is not
+possible to let QEMU invoke <code>exit(0)</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let</span> <span class="ident">qemu_exit_handle</span> <span class="op">=</span> <span class="ident">qemu_exit::X86::new</span>(<span class="ident">io_base</span>, <span class="ident">custom_exit_success</span>);</code></pre></div>
+<h3 id="literature"><a href="#literature">Literature</a></h3>
+<ul>
+<li><a href="https://static.docs.arm.com/dui0003/b/semihosting.pdf">Semihosting for AArch32 and AArch64</a></li>
+<li><a href="https://git.qemu.org/?p=qemu.git;a=blob;f=hw/misc/debugexit.c">QEMU isa-debug-exit source</a></li>
+<li><a href="https://git.qemu.org/?p=qemu.git;a=blob;f=hw/misc/sifive_test.c">QEMU sifive_test source</a></li>
+</ul>
+</div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left import-item"><code>pub use <a class="mod" href="x86/index.html" title="mod qemu_exit::x86">x86</a>::*;</code></div><div class="item-right docblock-short"></div></div></div><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="x86/index.html" title="qemu_exit::x86 mod">x86</a></div><div class="item-right docblock-short"><p>x86.</p>
+</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.QEMUExit.html" title="qemu_exit::QEMUExit trait">QEMUExit</a></div><div class="item-right docblock-short"><p>Generic interface for exiting QEMU.</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="qemu_exit" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (830880640 2022-06-28)" ></div>
+</body></html>

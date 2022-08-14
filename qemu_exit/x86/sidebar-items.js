@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["X86","x86 configuration."]]};

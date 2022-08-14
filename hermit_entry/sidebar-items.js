@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["define_entry_version","Defines the hermit entry version in the note section."]],"mod":[["boot_info","Creating and reading [`RawBootInfo`] from `Entry`."]],"type":[["Entry","Kernel entry point."]]};
